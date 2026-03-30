@@ -1,0 +1,22 @@
+{
+  "name": "openclaw-session-analyzer",
+  "version": "1.0.0",
+  "description": "OpenClaw 钱包创建会话耗时分析技能",
+  "main": "skills/openclaw-session-analyzer/SKILL.md",
+  "files": [
+    "skills/openclaw-session-analyzer/SKILL.md"
+  ],
+  "keywords": [
+    "openclaw",
+    "skill",
+    "session-analyzer",
+    "cobo",
+    "wallet"
+  ],
+  "author": "coboyqw",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coboyqw/openclaw-session-analyzer.git"
+  }
+}
