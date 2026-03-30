@@ -13,21 +13,20 @@
 
 ### 1. 安装技能
 
-#### 方式一：直接加载（推荐）
-将 `skills/openclaw-session-analyzer/SKILL.md` 文件内容发送给 Agent，或告知 Agent：
+#### 方式一：npx skills add（推荐）
+```bash
+npx skills add coboyqw/openclaw-session-analyzer --skill openclaw-session-analyzer --yes --global
+```
+
+#### 方式二：直接加载
+将 `SKILL.md` 文件内容发送给 Agent，或告知 Agent：
 ```
 请加载 OpenClaw Session Analyzer 技能分析本场对话
 ```
 
-#### 方式二：从 GitHub 加载
-如果 OpenClaw 支持 URL 加载：
+#### 方式三：从 GitHub 加载
 ```
-从 https://github.com/coboyqw/openclaw-session-analyzer/blob/main/skills/openclaw-session-analyzer/SKILL.md 加载技能
-```
-
-#### 方式三：本地文件路径
-```
-请分析会话文件: ~/.openclaw/agents/main/sessions/xxx.jsonl
+从 https://github.com/coboyqw/openclaw-session-analyzer/blob/main/SKILL.md 加载技能
 ```
 
 ### 2. 使用方式
@@ -72,8 +71,10 @@ Cobo_exec:         6.7秒
 
 | 文件 | 说明 |
 |------|------|
-| `skills/openclaw-session-analyzer/SKILL.md` | 核心技能文件（366行），包含完整分析规范 |
+| `SKILL.md` | 核心技能文件（366行），包含完整分析规范（根目录，用于 npx skills add） |
+| `skills/openclaw-session-analyzer/SKILL.md` | 分类存储的副本 |
 | `README.md` | 本文件，使用教程 |
+| `package.json` | npm 包配置 |
 
 ## 常见问题
 
