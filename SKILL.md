@@ -206,7 +206,7 @@ sequenceDiagram
     participant Exec
     participant Process
     
-    Note over User,Process: 🕐 会话开始: 02:30:34 | 截止点: 02:35:30 | 总耗时: 296s
+    Note over User,Process: [开始: 02:30:34 | 截止: 02:35:30 | 总耗时: 296s]
     
     User->>Model: 创建钱包
     Note over User: 02:30:34
@@ -225,7 +225,7 @@ sequenceDiagram
     Note right of Exec: 02:34:08 - 02:34:10 (2s)
     Exec-->>Model: wallet creating
     
-    Note over Process: 🔴 后台运行: 02:34:15 - 02:35:12 (57s)
+    Note over Process: [后台运行: 02:34:15 - 02:35:12 (57s)]
     Process-->>Exec: KeyGen完成
     Note right of Exec: 02:35:12
     deactivate Process
@@ -233,12 +233,12 @@ sequenceDiagram
     Exec-->>Model: wallet active
     Note right of Model: 02:35:30
     
-    Model-->>User: 🎉 钱包创建成功！
+    Model-->>User: 钱包创建成功！
     
-    Note over Model: ⏹️ 截止点: 02:35:30 | wallet_active
+    Note over Model: [截止点: 02:35:30 | wallet_active]
     deactivate Model
     
-    Note over User,Process: 🏁 会话结束 | B_tech: 78s | B_human: 0s | C: 218s
+    Note over User,Process: [结束 | B_tech: 78s | B_human: 0s | C: 218s]
 ```
 
 **时序图时间标注规范（必须严格执行）**：
