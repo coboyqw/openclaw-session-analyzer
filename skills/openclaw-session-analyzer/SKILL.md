@@ -27,21 +27,17 @@ ls -lt ~/.openclaw/agents/main/sessions/*.jsonl | head -5
 - 用户直接提供会话文件路径
 - 或导出到指定目录后分析
 
-**方式C - 导出最新原始会话文件（用于人工复核）**
+**方式C - 自动导出原始会话（标准流程，必做）**
 ```bash
-# 1. 找到最新的 session 文件
+# 分析前自动导出原始文件（用于TG双发和人工复核）
 latest=$(ls -t ~/.openclaw/agents/main/sessions/*.jsonl | head -1)
-
-# 2. 复制到工作目录（保留原始文件名）
 cp "$latest" /root/.openclaw/workspace/
-
-# 3. 获取文件名用于后续发送
-basename "$latest"
+echo "已导出: $(basename $latest)"
 ```
-**用途**：
-- 文件过大时 Agent 分析受限，导出原始文件供人工复核
-- 通过 TG 发送给用户，便于本地重新分析
-- 作为审计备份保存
+**说明**：
+- 所有分析任务必须导出原始 `.jsonl` 文件
+- 分析完成后通过 TG **双发**：分析报告 + 原始会话文件
+- 原始文件供用户人工核对时间戳，解决分析不准争议
 
 2. **读 JSON**：直接读取（可分段），禁止写脚本解析
 3. **定范围**：
@@ -380,80 +376,54 @@ session_<UUID>_analysis.md
 session_05ab58e6-2d55-43ee-b603-c6644cd535f6_analysis.md
 ```
 
-### Telegram (TG) 发送说明
+## 输出与发送规范
 
-如需通过 TG 将报告发送给用户：
+### 输出目录与文件
 
-#### 发送分析报告（必做）
-1. **找到文件**: 到 `/root/.openclaw/workspace/` 目录
-2. **确认文件名**: 按上述命名规范找到最新的 `session_<UUID>_analysis.md`
-3. **发送方式**:
-   - 直接发送 Markdown 文件（用户可下载查看）
-   - 或复制文件内容粘贴为 TG 消息
+| 文件类型 | 路径 | 命名格式 |
+|---------|------|---------|
+| 分析报告 | `/root/.openclaw/workspace/` | `session_<UUID>_analysis.md` |
+| 原始会话 | `/root/.openclaw/workspace/` | `<UUID>.jsonl` |
 
-#### 发送原始会话文件（推荐 - 用于复核）
-> **⚠️ 强烈建议**: 大文件分析时，同时发送原始 `.jsonl` 文件，便于用户人工核对时间戳。
+### Telegram (TG) 发送标准流程（必做）
 
-1. **导出原始文件**: 使用「方式C」将最新 session 复制到 workspace
-2. **确认文件名**: 格式为 `<UUID>.jsonl`
-3. **一起发送**: 
+> **⚠️ 强制要求**: 所有分析任务必须通过 TG **双发**（分析报告 + 原始会话文件）。
+
+**发送步骤**:
+
+1. **定位文件**（到 workspace 目录）
+   ```bash
+   ls -lt /root/.openclaw/workspace/session_*_analysis.md | head -1  # 最新报告
+   ls -lt /root/.openclaw/workspace/*.jsonl | head -1               # 原始会话
+   ```
+
+2. **双发文件**（必须同时发送）:
    ```
    📊 分析报告: session_<UUID>_analysis.md
    📁 原始数据: <UUID>.jsonl （供人工复核时间戳）
    ```
-4. **附带说明**: 
-   > "原始会话文件已一同发送，如分析结果有疑问，可自行检查时间戳或重新生成报告"
 
-**注意**: 
-- 报告文件为 Markdown 格式
-- 原始 session 文件可能较大（几MB到几十MB），TG 有文件大小限制（通常 50MB）
-- 如文件过大，可告知用户通过其他方式获取（如云盘链接）
+3. **附带说明**:
+   > "耗时分析报告已生成。原始会话文件(.jsonl)一同发送，如有疑问可自行核对时间戳或要求重新分析。"
 
----
-
-## 原始会话文件导出规范（解决大文件分析问题）
-
-### 何时需要导出
-
-| 场景 | 文件大小 | 处理方式 |
-|------|---------|---------|
-| 正常分析 | < 1MB | Agent 直接读取分析 |
-| 大文件分析 | > 1MB | Agent 分析 + **导出原始文件人工复核** |
-| 分析结果存疑 | 任意 | 导出原始文件重新核对时间戳 |
-| 审计备份 | 任意 | 导出保存原始 session |
-
-### 导出步骤
-
-```bash
-# 步骤1: 定位最新会话文件
-ls -lt ~/.openclaw/agents/main/sessions/*.jsonl | head -1
-# 输出示例: /root/.openclaw/agents/main/sessions/05ab58e6-2d55-43ee-b603-c6644cd535f6.jsonl
-
-# 步骤2: 复制到 workspace（保留原始文件名）
-cp /root/.openclaw/agents/main/sessions/05ab58e6-2d55-43ee-b603-c6644cd535f6.jsonl \
-   /root/.openclaw/workspace/
-
-# 步骤3: 确认导出成功
-ls -lh /root/.openclaw/workspace/*.jsonl
-```
-
-### 导出后操作
-
-1. **Agent 分析**: 同时分析导出的 session 文件
-2. **生成报告**: 输出 `session_<UUID>_analysis.md`
-3. **TG 双发**: 同时发送分析报告 + 原始 session 文件
-4. **人工复核**: 用户可在本地用文本编辑器打开 `.jsonl` 核对时间戳
+**注意事项**:
+- 原始 `.jsonl` 文件可能较大（几MB-几十MB），TG 限制约 50MB
+- 超过限制时，优先发送报告，原始文件通过云盘链接或其他方式提供
 
 ### 人工复核指南（给用户）
 
-如通过 TG 收到原始 `.jsonl` 文件：
+收到原始 `.jsonl` 文件后，本地核对方法：
 
 ```bash
-# 本地检查时间戳
-jq '.timestamp' 05ab58e6-2d55-43ee-b603-c6644cd535f6.jsonl | head -20
+# 查看时间戳序列
+jq '.timestamp' <UUID>.jsonl | head -20
 
 # 搜索关键事件（如 wallet active）
-grep -n "wallet active\|status.*active" 05ab58e6-2d55-43ee-b603-c6644cd535f6.jsonl
+grep -n "wallet active\|status.*active" <UUID>.jsonl
+
+# 计算总时长（从第一行到 wallet active）
+head -1 <UUID>.jsonl | jq '.timestamp'
+grep "wallet active" <UUID>.jsonl | tail -1 | jq '.timestamp'
 ```
 
 ---
