@@ -13,11 +13,21 @@
 
 ### 1. 安装技能
 
-将 `skills/openclaw-session-analyzer/SKILL.md` 发送给 OpenClaw Agent，或安装到技能库：
+#### 方式一：直接加载（推荐）
+将 `skills/openclaw-session-analyzer/SKILL.md` 文件内容发送给 Agent，或告知 Agent：
+```
+请加载 OpenClaw Session Analyzer 技能分析本场对话
+```
 
-```bash
-# 如果是 OpenClaw 环境
-请按「OpenClaw Session Analyzer」技能分析本场对话
+#### 方式二：从 GitHub 加载
+如果 OpenClaw 支持 URL 加载：
+```
+从 https://github.com/coboyqw/openclaw-session-analyzer/blob/main/skills/openclaw-session-analyzer/SKILL.md 加载技能
+```
+
+#### 方式三：本地文件路径
+```
+请分析会话文件: ~/.openclaw/agents/main/sessions/xxx.jsonl
 ```
 
 ### 2. 使用方式
