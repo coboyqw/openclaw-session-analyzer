@@ -27,6 +27,22 @@ ls -lt ~/.openclaw/agents/main/sessions/*.jsonl | head -5
 - 用户直接提供会话文件路径
 - 或导出到指定目录后分析
 
+**方式C - 导出最新原始会话文件（用于人工复核）**
+```bash
+# 1. 找到最新的 session 文件
+latest=$(ls -t ~/.openclaw/agents/main/sessions/*.jsonl | head -1)
+
+# 2. 复制到工作目录（保留原始文件名）
+cp "$latest" /root/.openclaw/workspace/
+
+# 3. 获取文件名用于后续发送
+basename "$latest"
+```
+**用途**：
+- 文件过大时 Agent 分析受限，导出原始文件供人工复核
+- 通过 TG 发送给用户，便于本地重新分析
+- 作为审计备份保存
+
 2. **读 JSON**：直接读取（可分段），禁止写脚本解析
 3. **定范围**：
    - 起点：用户首次请求创建钱包
@@ -365,14 +381,80 @@ session_05ab58e6-2d55-43ee-b603-c6644cd535f6_analysis.md
 ```
 
 ### Telegram (TG) 发送说明
+
 如需通过 TG 将报告发送给用户：
+
+#### 发送分析报告（必做）
 1. **找到文件**: 到 `/root/.openclaw/workspace/` 目录
-2. **确认文件名**: 按上述命名规范找到最新的 session_<UUID>_analysis.md
+2. **确认文件名**: 按上述命名规范找到最新的 `session_<UUID>_analysis.md`
 3. **发送方式**:
    - 直接发送 Markdown 文件（用户可下载查看）
    - 或复制文件内容粘贴为 TG 消息
 
-**注意**: 报告文件为 Markdown 格式，建议在消息中附带说明 "点击下载查看完整分析报告"
+#### 发送原始会话文件（推荐 - 用于复核）
+> **⚠️ 强烈建议**: 大文件分析时，同时发送原始 `.jsonl` 文件，便于用户人工核对时间戳。
+
+1. **导出原始文件**: 使用「方式C」将最新 session 复制到 workspace
+2. **确认文件名**: 格式为 `<UUID>.jsonl`
+3. **一起发送**: 
+   ```
+   📊 分析报告: session_<UUID>_analysis.md
+   📁 原始数据: <UUID>.jsonl （供人工复核时间戳）
+   ```
+4. **附带说明**: 
+   > "原始会话文件已一同发送，如分析结果有疑问，可自行检查时间戳或重新生成报告"
+
+**注意**: 
+- 报告文件为 Markdown 格式
+- 原始 session 文件可能较大（几MB到几十MB），TG 有文件大小限制（通常 50MB）
+- 如文件过大，可告知用户通过其他方式获取（如云盘链接）
+
+---
+
+## 原始会话文件导出规范（解决大文件分析问题）
+
+### 何时需要导出
+
+| 场景 | 文件大小 | 处理方式 |
+|------|---------|---------|
+| 正常分析 | < 1MB | Agent 直接读取分析 |
+| 大文件分析 | > 1MB | Agent 分析 + **导出原始文件人工复核** |
+| 分析结果存疑 | 任意 | 导出原始文件重新核对时间戳 |
+| 审计备份 | 任意 | 导出保存原始 session |
+
+### 导出步骤
+
+```bash
+# 步骤1: 定位最新会话文件
+ls -lt ~/.openclaw/agents/main/sessions/*.jsonl | head -1
+# 输出示例: /root/.openclaw/agents/main/sessions/05ab58e6-2d55-43ee-b603-c6644cd535f6.jsonl
+
+# 步骤2: 复制到 workspace（保留原始文件名）
+cp /root/.openclaw/agents/main/sessions/05ab58e6-2d55-43ee-b603-c6644cd535f6.jsonl \
+   /root/.openclaw/workspace/
+
+# 步骤3: 确认导出成功
+ls -lh /root/.openclaw/workspace/*.jsonl
+```
+
+### 导出后操作
+
+1. **Agent 分析**: 同时分析导出的 session 文件
+2. **生成报告**: 输出 `session_<UUID>_analysis.md`
+3. **TG 双发**: 同时发送分析报告 + 原始 session 文件
+4. **人工复核**: 用户可在本地用文本编辑器打开 `.jsonl` 核对时间戳
+
+### 人工复核指南（给用户）
+
+如通过 TG 收到原始 `.jsonl` 文件：
+
+```bash
+# 本地检查时间戳
+jq '.timestamp' 05ab58e6-2d55-43ee-b603-c6644cd535f6.jsonl | head -20
+
+# 搜索关键事件（如 wallet active）
+grep -n "wallet active\|status.*active" 05ab58e6-2d55-43ee-b603-c6644cd535f6.jsonl
+```
 
 ---
 
