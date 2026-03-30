@@ -13,7 +13,7 @@
 
 ### 1. 安装技能
 
-将 `SKILL.md` 发送给 OpenClaw Agent，或安装到技能库：
+将 `skills/openclaw-session-analyzer/SKILL.md` 发送给 OpenClaw Agent，或安装到技能库：
 
 ```bash
 # 如果是 OpenClaw 环境
@@ -62,7 +62,7 @@ Cobo_exec:         6.7秒
 
 | 文件 | 说明 |
 |------|------|
-| `SKILL.md` | 核心技能文件（366行），包含完整分析规范 |
+| `skills/openclaw-session-analyzer/SKILL.md` | 核心技能文件（366行），包含完整分析规范 |
 | `README.md` | 本文件，使用教程 |
 
 ## 常见问题
