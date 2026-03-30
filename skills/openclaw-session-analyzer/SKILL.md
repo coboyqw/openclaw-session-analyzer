@@ -29,14 +29,14 @@ ls -lt ~/.openclaw/agents/main/sessions/*.jsonl | head -5
 
 **方式C - 自动导出原始会话（标准流程，必做）**
 ```bash
-# 分析前自动导出原始文件（用于TG双发和人工复核）
+# 分析前自动导出原始文件（用于双发交付和人工复核）
 latest=$(ls -t ~/.openclaw/agents/main/sessions/*.jsonl | head -1)
 cp "$latest" /root/.openclaw/workspace/
 echo "已导出: $(basename $latest)"
 ```
 **说明**：
 - 所有分析任务必须导出原始 `.jsonl` 文件
-- 分析完成后通过 TG **双发**：分析报告 + 原始会话文件
+- 分析完成后**双发交付**：分析报告 + 原始会话文件
 - 原始文件供用户人工核对时间戳，解决分析不准争议
 
 2. **读 JSON**：直接读取（可分段），禁止写脚本解析
@@ -385,9 +385,9 @@ session_05ab58e6-2d55-43ee-b603-c6644cd535f6_analysis.md
 | 分析报告 | `/root/.openclaw/workspace/` | `session_<UUID>_analysis.md` |
 | 原始会话 | `/root/.openclaw/workspace/` | `<UUID>.jsonl` |
 
-### Telegram (TG) 发送标准流程（必做）
+### 报告交付标准流程（必做）
 
-> **⚠️ 强制要求**: 所有分析任务必须通过 TG **双发**（分析报告 + 原始会话文件）。
+> **⚠️ 强制要求**: 所有分析任务必须**双发交付**（分析报告 + 原始会话文件），支持 Telegram、Discord、Slack 或本地文件等多种方式。
 
 **发送步骤**:
 
@@ -407,7 +407,7 @@ session_05ab58e6-2d55-43ee-b603-c6644cd535f6_analysis.md
    > "耗时分析报告已生成。原始会话文件(.jsonl)一同发送，如有疑问可自行核对时间戳或要求重新分析。"
 
 **注意事项**:
-- 原始 `.jsonl` 文件可能较大（几MB-几十MB），TG 限制约 50MB
+- 原始 `.jsonl` 文件可能较大（几MB-几十MB），部分平台有文件大小限制
 - 超过限制时，优先发送报告，原始文件通过云盘链接或其他方式提供
 
 ### 人工复核指南（给用户）
