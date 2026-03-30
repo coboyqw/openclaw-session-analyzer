@@ -195,6 +195,7 @@ sequenceDiagram
     
     User->>Model: 创建钱包
     Note over User: 02:30:34
+    activate Model
     
     Model->>Exec: npx skills add
     Note right of Exec: 02:30:34 - 02:30:42 (8s)
